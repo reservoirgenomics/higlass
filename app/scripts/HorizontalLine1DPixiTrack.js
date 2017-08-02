@@ -171,6 +171,8 @@ export class HorizontalLine1DPixiTrack extends HorizontalTiled1DPixiTrack {
         graphics.lineStyle(strokeWidth, stroke, 1);
 
         //console.log('valueScale.domain()', this.valueScale.domain());
+        //
+        //console.log('pseudocount:', pseudocount);
 
 
        // graphics.beginFill(0xFF700B, 1);
@@ -178,6 +180,7 @@ export class HorizontalLine1DPixiTrack extends HorizontalTiled1DPixiTrack {
         let logScaling = this.options.valueScaling == 'log';
 
         for (let i = 0; i < tileValues.length; i++) {
+            //console.log('tileValues[i]:', tileValues[i]);
             let xPos = this._xScale(tileXScale(i));
             let yPos = this.valueScale(tileValues[i] + pseudocount)
                 

@@ -45,7 +45,8 @@ export const optionsInfo = {
         name: "Value Scaling",
         inlineOptions: {
             'linear': { name: "Linear", value: 'linear' },
-            'log': {name: "Log", value: 'log' }
+            'logMedianPseudocounts': {name: "Log (Median Pseudocounts)", value: 'logMedianPseudocounts' },
+            'log': {name: 'Log', value: 'logNoPseudocount'}
         }
     },
     lineStrokeWidth: {
