@@ -56,7 +56,7 @@ export class TiledPlot extends React.Component {
             xPositionOffset: 0,
 
             tracks: tracks,
-            addTrackPosition: null,
+            addTrackPosition: 'top',
             mouseOverOverlayUid: null,
             //trackOptions: null
             //trackOptions: trackOptions

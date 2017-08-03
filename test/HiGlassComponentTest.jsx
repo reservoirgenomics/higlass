@@ -78,6 +78,51 @@ function getTiledPlot(hgc, viewUid) {
 describe("Simple HiGlassComponent", () => {
     let hgc = null, div = null, atm=null;
 
+
+    describe("AddTrackModal", () => {
+        it ('Cleans up previously created instances and mounts a new component', (done) => {
+            if (hgc) {
+                hgc.unmount();
+                hgc.detach();
+            }
+
+            if (div) {
+                global.document.body.removeChild(div);
+            }
+
+            div = global.document.createElement('div');
+            global.document.body.appendChild(div);
+
+            div.setAttribute('style', 'height:400px; width:800px;background-color: lightgreen');
+            div.setAttribute('id', 'simple-hg-component');
+
+            hgc = mount(<HiGlassComponent 
+                          options={{bounded: true}}
+                          viewConfig={oneViewConfig}
+                        />, 
+                {attachTo: div});
+
+            setTimeout(done, pageLoadTime);
+        });
+
+        it ("has the focus in the searchbar when adding a new track", (done) => {
+            let tiledPlot = hgc.instance().tiledPlots['aa'];
+            tiledPlot.handleAddTrack('top');
+
+            hgc.update();
+
+            const inputField = ReactDOM.findDOMNode(tiledPlot.addTrackModal.tilesetFinder.searchBox);
+
+            // make sure the input field is equal to the document's active element
+            // e.g. that it has focus
+            expect(inputField).to.be.eql(document.activeElement);
+
+            setTimeout(done, shortLoadTime);
+        });
+    });
+
+    return;
+
     describe("Starting with an existing genome position search box", () => {
         it ('Cleans up previously created instances and mounts a new component', (done) => {
             if (hgc) {
@@ -617,49 +662,6 @@ describe("Simple HiGlassComponent", () => {
             expect(aaCenterX - ccCenterX).to.be.below(0.001);
             expect(aaCenterY - ccCenterY).to.be.below(0.001);
 
-
-            setTimeout(done, shortLoadTime);
-        });
-    });
-
-
-    describe("AddTrackModal", () => {
-        it ('Cleans up previously created instances and mounts a new component', (done) => {
-            if (hgc) {
-                hgc.unmount();
-                hgc.detach();
-            }
-
-            if (div) {
-                global.document.body.removeChild(div);
-            }
-
-            div = global.document.createElement('div');
-            global.document.body.appendChild(div);
-
-            div.setAttribute('style', 'height:400px; width:800px;background-color: lightgreen');
-            div.setAttribute('id', 'simple-hg-component');
-
-            hgc = mount(<HiGlassComponent 
-                          options={{bounded: true}}
-                          viewConfig={oneViewConfig}
-                        />, 
-                {attachTo: div});
-
-            setTimeout(done, pageLoadTime);
-        });
-
-        it ("has the focus in the searchbar when adding a new track", (done) => {
-            let tiledPlot = hgc.instance().tiledPlots['aa'];
-            tiledPlot.handleAddTrack('top');
-
-            hgc.update();
-
-            const inputField = ReactDOM.findDOMNode(tiledPlot.addTrackModal.tilesetFinder.searchBox);
-
-            // make sure the input field is equal to the document's active element
-            // e.g. that it has focus
-            expect(inputField).to.be.eql(document.activeElement);
 
             setTimeout(done, shortLoadTime);
         });

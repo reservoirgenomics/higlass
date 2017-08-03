@@ -6,6 +6,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import slugid from 'slugid';
 import {tracksInfo,localTracks} from './config.js'
+import {TilesetsList} from './TilesetsList.jsx';
 
 import {Form, Row,Col, FormGroup, ControlLabel, FormControl} from 'react-bootstrap';
 
@@ -188,7 +189,11 @@ export class TilesetFinder extends React.Component {
                             onDoubleClick={this.handleOptionDoubleClick.bind(this)}
                             key={x.serverUidKey}
                             value={x.serverUidKey}>
-                                {x.name}
+                                <div style={{"height": 30}}>
+                                    {x.name}
+                                    <br />
+                                    {"ha"}
+                                </div>
                             </option>
         });
 
@@ -226,9 +231,14 @@ export class TilesetFinder extends React.Component {
                         </Form>
                 )
 
+        let tilesetsList = (<TilesetsList
+            options={optionsList}
+        />);
+
         return(
                 <div>
                     {form}
+                    {tilesetsList}
                 </div>
                 )
     }
