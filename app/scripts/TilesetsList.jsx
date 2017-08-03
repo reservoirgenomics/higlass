@@ -7,7 +7,7 @@ export class TilesetsList extends React.Component {
 
         this.state = {
             lastSelectedIndex: 0,
-            selectedIndeces : new Set()
+            selectedIndeces : new Set([0])
         }
     }
 
@@ -19,15 +19,49 @@ export class TilesetsList extends React.Component {
                   style={{
                   "margin-left": "5px",
                   "margin-right": "5px",
-                  "background": i == this.state.lastSelectedIndex ? "lightblue" : "white"
+                  "background": this.state.selectedIndeces.has(i) ? "lightblue" : "white",
+                    "-webkit-touch-callout" : "none",
+                    "-webkit-user-select": "none",
+                    "-moz-user-select": "none",
+                    "-ms-user-select": "none",
+                    "user-select" : "none"
                   }} 
                   onClick={(event, value) => {
-                    console.log('event:', event.ctrlKey, event.shiftKey);
                     event.stopPropagation();
 
-                    this.setState({
-                        lastSelectedIndex : i
-                    });
+                    if (event.shiftKey) {
+                        let selectedIndeces = new Set();
+                        let minIndex = Math.min(this.state.lastSelectedIndex, i);
+                        let maxIndex = Math.max(this.state.lastSelectedIndex, i);
+
+                        for (let j = minIndex; j <= maxIndex; j++) 
+                            selectedIndeces.add(j);
+                            
+                        this.setState({
+                            selectedIndeces: selectedIndeces
+                        });
+                    } else if (event.ctrlKey || event.metaKey) {
+                        let selectedIndeces = this.state.selectedIndeces;
+
+                        if (selectedIndeces.size > 1 && selectedIndeces.has(i)) {
+                            // this item is already selected, so we need to unselect it
+                            //
+                            console.log('removing:', i);
+                            selectedIndeces.delete(i);
+                        } else {
+                            selectedIndeces.add(i);
+                        }
+
+                        this.setState({
+                            selectedIndeces: selectedIndeces,
+                            lastSelectedIndex: i
+                        });
+                    } else {
+                        this.setState({
+                            lastSelectedIndex : i,
+                            selectedIndeces: new Set([i])
+                        });
+                    }
                   }}
               >
                   <div
