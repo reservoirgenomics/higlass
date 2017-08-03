@@ -29,6 +29,7 @@ import {ArrowheadDomainsTrack} from './ArrowheadDomainsTrack.js';
 import {Horizontal2DDomainsTrack} from './Horizontal2DDomainsTrack.js';
 
 import {SquareMarkersTrack} from './SquareMarkersTrack.js';
+import {CircleTrack} from './CircleTrack.js';
 import {Chromosome2DLabels} from './Chromosome2DLabels.js';
 import {Chromosome2DGrid} from './Chromosome2DGrid.js';
 import {Chromosome2DAnnotations} from './Chromosome2DAnnotations.js';
@@ -912,6 +913,15 @@ export class TrackRenderer extends React.Component {
             case 'square-markers':
                 return new SquareMarkersTrack(
                     this.pStage,
+                    track.server,
+                    track.tilesetUid,
+                    handleTilesetInfoReceived,
+                    track.options,
+                    () => this.currentProps.onNewTilesLoaded(track.uid)
+                );
+            case 'circle':
+                return new CircleTrack(
+                    this.svgElement,
                     track.server,
                     track.tilesetUid,
                     handleTilesetInfoReceived,

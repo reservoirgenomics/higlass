@@ -700,7 +700,13 @@ export const tracksInfo = [
             trackBorderColor: 'black'
         }
     },
-
+    {
+        type: 'circle',
+        datatype: ['circle'],
+        orientation: '2d',
+        name: "Circular arc view",
+        hidden: true
+    },
     {
         type: 'combined',
         datatype: 'any',
