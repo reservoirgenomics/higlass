@@ -4,17 +4,31 @@ import ReactDOM from 'react-dom';
 export class TilesetsList extends React.Component {
     constructor(props) {
         super(props);
+
+        this.state = {
+            lastSelectedIndex: 0,
+            selectedIndeces : new Set()
+        }
     }
 
     render() {
-        console.log('options:', this.props.options);
+        //console.log('options:', this.props.options);
         let listElements = this.props.options.map((x,i) =>
                                                       (
               <li
                   style={{
                   "margin-left": "5px",
-                  "margin-right": "5px"
+                  "margin-right": "5px",
+                  "background": i == this.state.lastSelectedIndex ? "lightblue" : "white"
                   }} 
+                  onClick={(event, value) => {
+                    console.log('event:', event.ctrlKey, event.shiftKey);
+                    event.stopPropagation();
+
+                    this.setState({
+                        lastSelectedIndex : i
+                    });
+                  }}
               >
                   <div
                       style={{
@@ -28,7 +42,7 @@ export class TilesetsList extends React.Component {
                   >
                       <div
                         style={{
-                            marginBottom: "2px",
+                            marginBottom: "3px",
                             fontWeight: "bold",
                             color: "#555"
                             }}
@@ -49,6 +63,7 @@ export class TilesetsList extends React.Component {
                                 paddingTop: 2,
                                 paddingBottom: 2,
                                 borderRadius: 3,
+                                marginRight: 2,
                                 background: "#ccc"
                             }}
                         >
