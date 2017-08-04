@@ -1,5 +1,6 @@
 import {SVGTrack} from './SVGTrack.js';
 import {tileProxy} from './TileProxy.js';
+import {select} from 'd3-selection';
 import {arc} from 'd3-shape';
 import {ribbon} from 'd3-chord';
 
@@ -27,10 +28,10 @@ export class CircleTrack extends SVGTrack {
             .append('g');
 
         this.pChord = this.gCenter
+        .append('path')
         .style('opacity', 0.5)
         .style('stroke-width', '4px')
         .style('stroke', 'green')
-        .append('path');
 
         this.gArc = this.gCenter
         .append('g');
@@ -40,6 +41,22 @@ export class CircleTrack extends SVGTrack {
 
             this.texts = [];
             this.lineGraphics = new PIXI.Graphics();
+
+            this.gArc.selectAll('path')
+                .data(this.chromInfo.cumPositions)
+                .enter()
+                .append('path')
+                .style('stroke-width', '2')
+                .style('stroke', 'grey')
+                .style('fill', (d,i) => i % 2 ? 'white' : 'grey')
+                .style('opacity', 0.3)
+
+            this.gArc.selectAll('text')
+            .data(this.chromInfo.cumPositions)
+                .enter()
+                .append('text')
+                .attr('text-anchor', 'middle')
+                .text(d => d.chr);
 
             for (let i = 0; i < this.chromInfo.cumPositions.length; i++) {
                 let thisTexts = [];
@@ -64,8 +81,6 @@ export class CircleTrack extends SVGTrack {
                 this.texts.push(thisTexts);
             }
 
-            console.log('this.chromInfo:', this.chromInfo);
-
             this.draw();
             this.animate();
         });
@@ -79,14 +94,18 @@ export class CircleTrack extends SVGTrack {
 
         let totalLength = this.chromInfo.totalLength;
 
-        let MARGIN = 5;
+        let MARGIN = 15;
         let TEXT_MARGIN = 20;
 
         let radius = Math.min(this.dimensions[0], this.dimensions[1]) / 2 - MARGIN - TEXT_MARGIN; 
 
         let viewArc = arc()
             .innerRadius(radius)
-            .outerRadius(radius + TEXT_MARGIN);
+            .outerRadius(radius + 5);
+
+        let textArc = arc()
+            .innerRadius(radius + TEXT_MARGIN)
+            .outerRadius(radius + TEXT_MARGIN + MARGIN);
 
         console.log('arc');
 
@@ -113,12 +132,87 @@ export class CircleTrack extends SVGTrack {
             }
         });
 
-        console.log('this.chromInfo:', totalLength)
+        console.log('this.chromInfo:', this.chromInfo)
         console.log('this.xScale.domain()', this._xScale.domain());
         console.log('path:', path);
 
         this.pChord
         .attr('d', path);
+
+        function chrCentroid(d) {
+            let anglePos = {
+                startAngle: 2 * Math.PI * d.pos / totalLength,
+                endAngle: 2 * Math.PI * (d.pos + +this.chromInfo.chromLengths[d.chr]) / totalLength
+            }
+            //console.log('anglePos', anglePos);
+            let centroid = textArc.centroid(anglePos);
+
+            //console.log('centroid:', centroid);
+            return centroid;
+        }
+
+        let prevText = null;
+
+        this.gArc.selectAll('text')
+        .attr('x', x => chrCentroid.bind(this)(x)[0])
+        .attr('y', x => chrCentroid.bind(this)(x)[1] + 7)
+        .style('visibility', 'visible')
+        .each(function(d) { prevText = this });
+
+        function intersection(bbox1, bbox2) {
+            let x1 = Math.max(bbox1.x, bbox2.x);
+            let x2 = Math.min(bbox1.x + bbox1.width, bbox2.x + bbox2.width);
+
+            if (x1 <= x2) {
+                //x coords intersect
+                let y1 = Math.max(bbox1.y, bbox2.y);
+                let y2 = Math.min(bbox1.y + bbox1.height, bbox2.y + bbox2.height);
+
+                if (y1 <= y2) {
+                    // y coords intersect
+                    return true;
+                }
+
+            }
+
+            return false;
+        }
+
+        let self = this;
+        this.gArc.selectAll('text')
+        .each(function(d, i) {
+            prevText = this;
+            let prevBbox = prevText.getBBox();
+
+            self.gArc.selectAll('text')
+            .each(function(e,j) {
+                if (j >= i)
+                    return;
+
+                let bbox = this.getBBox();
+
+                //console.log(select(prevText).text(), select(this).text());
+                
+                if (select(this).style('visibility') != 'hidden' && select(prevText).style('visibility') != 'hidden' && intersection(prevBbox, bbox)) {
+                    //console.log('hiding', select(prevText).text());
+                    select(prevText)
+                    .style('visibility', 'hidden');
+                } else {
+                    /*
+                    select(this)
+                    .style('visible', 'visible');
+                    */
+                }
+
+            });
+        });
+
+        this.gArc.selectAll('path')
+        .attr('d', d => viewArc({
+            startAngle: 2 * Math.PI * d.pos / totalLength,
+            endAngle: 2 * Math.PI * (d.pos + +this.chromInfo.chromLengths[d.chr]) / totalLength
+        }));
+
 
         super.draw();
     }
