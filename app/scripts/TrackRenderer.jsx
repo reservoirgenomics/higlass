@@ -24,6 +24,7 @@ import {CNVIntervalTrack} from './CNVIntervalTrack.js';
 import {LeftTrackModifier} from './LeftTrackModifier.js';
 import {Track} from './Track.js';
 import {HorizontalGeneAnnotationsTrack} from './HorizontalGeneAnnotationsTrack.js';
+import {BedLikeTrack} from './BedLikeTrack.js';
 import {ArrowheadDomainsTrack} from './ArrowheadDomainsTrack.js';
 
 import {Horizontal2DDomainsTrack} from './Horizontal2DDomainsTrack.js';
@@ -856,6 +857,15 @@ export class TrackRenderer extends React.Component {
                     return new Track();
             case 'horizontal-gene-annotations':
                 return new HorizontalGeneAnnotationsTrack(
+                    this.pStage,
+                    track.server,
+                    track.tilesetUid,
+                    handleTilesetInfoReceived,
+                    track.options,
+                    () => this.currentProps.onNewTilesLoaded(track.uid)
+                )
+            case 'bedlike':
+                return new BedLikeTrack(
                     this.pStage,
                     track.server,
                     track.tilesetUid,

@@ -107,8 +107,6 @@ export class CircleTrack extends SVGTrack {
             .innerRadius(radius + TEXT_MARGIN)
             .outerRadius(radius + TEXT_MARGIN + MARGIN);
 
-        console.log('arc');
-
         let viewRibbon = ribbon()
             .radius(radius);
 
@@ -117,9 +115,6 @@ export class CircleTrack extends SVGTrack {
 
         let startYDomain = Math.max(this._yScale.domain()[0], 0);
         let endYDomain = Math.min(this._yScale.domain()[1], totalLength);
-
-        console.log('startXDomain', startXDomain, endXDomain);
-        console.log('startYDomain', startYDomain, endYDomain);
 
         let path = viewRibbon({
             source: { 
@@ -131,10 +126,6 @@ export class CircleTrack extends SVGTrack {
                 endAngle: 2 * Math.PI * (endYDomain / totalLength)
             }
         });
-
-        console.log('this.chromInfo:', this.chromInfo)
-        console.log('this.xScale.domain()', this._xScale.domain());
-        console.log('path:', path);
 
         this.pChord
         .attr('d', path);

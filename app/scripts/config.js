@@ -589,6 +589,22 @@ export const tracksInfo = [
         }
     },
     {
+        type: 'bedlike',
+        datatype: ['bedlike'],
+        local: false,
+        minHeight: 55 ,
+        orientation: '1d-horizontal',
+        name: 'BED-like track',
+        thumbnail: null,
+        availableOptions: [ 'labelPosition', 'labelColor', 'labelTextOpacity', 'labelBackgroundOpacity', "trackBorderWidth", "trackBorderColor"],
+        defaultOptions: {
+            labelColor: 'black',
+            labelPosition: 'hidden',
+            trackBorderWidth: 0,
+            trackBorderColor: 'black'
+        }
+    },
+    {
         type: 'vertical-gene-annotations',
         datatype: ['gene-annotation'],
         local: false,
@@ -607,7 +623,6 @@ export const tracksInfo = [
             trackBorderColor: 'black'
         }
     },
-
     {
         type: 'arrowhead-domains',
         datatype: ['arrowhead-domains'],
