@@ -36,6 +36,8 @@ export class HorizontalGeneAnnotationsTrack extends HorizontalTiled1DPixiTrack {
         super(scene, server, uid, handleTilesetInfoReceived, options, animate, popupCallback);
         this.textFontSize = '10px';
         this.textFontFamily = 'Arial';
+
+        this.popupCallback = popupCallback;
     }
 
     initTile(tile) {
@@ -100,6 +102,35 @@ export class HorizontalGeneAnnotationsTrack extends HorizontalTiled1DPixiTrack {
 
     drawTile(tile) {
 
+    }
+
+    onClick(position) {
+        /** 
+         * Somebody clicked on this track
+         */
+        // go through all the tiles and see if any of the texts or gene names
+        // are at this position
+         
+        for (let tile of this.visibleAndFetchedTiles()) {
+            for (let td of tile.tileData) {
+                console.log('text:', td.fields[3], tile.texts[td.fields[3]]);
+                let textObj = tile.texts[td.fields[3]];
+                let textObjBounds = textObj.getBounds();
+                console.log('textObjBounds:', textObjBounds);
+
+                if (position[0] >= textObjBounds.x 
+                    && position[0] < textObjBounds.x + textObjBounds.width
+                    && position[1] >= textObjBounds.y
+                    && position[1] < textObjBounds.y + textObjBounds.height) {
+                    // this label has been clicked on 
+                    console.log('td.fields:', td.fields);
+
+                    if (this.popupCallback) {
+
+                    }
+                }
+            }
+        }
     }
 
     renderTile(tile) {

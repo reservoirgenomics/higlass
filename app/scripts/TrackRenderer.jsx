@@ -5,9 +5,9 @@ import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 
 import {zoom, zoomIdentity} from 'd3-zoom';
-import {select,event} from 'd3-selection';
+import {select,event,mouse} from 'd3-selection';
 import {scaleLinear} from 'd3-scale';
-import {dictItems} from './utils.js';
+import {dictItems,dictValues} from './utils.js';
 
 import {HeatmapTiledPixiTrack} from './HeatmapTiledPixiTrack.js';
 import {Id2DTiledPixiTrack} from './Id2DTiledPixiTrack.js';
@@ -138,6 +138,7 @@ export class TrackRenderer extends React.Component {
 
         // add back the previous transform
         this.divTrackAreaSelection.call(this.zoomBehavior);
+        this.divTrackAreaSelection.on('click', this.handleMouseClick.bind(this));
         this.zoomBehavior.transform(this.divTrackAreaSelection, this.zoomTransform);
     }
 
@@ -602,6 +603,55 @@ export class TrackRenderer extends React.Component {
         for (let i = 0; i < trackUids.length; i++) {
             this.trackDefObjects[trackUids[i]].trackObject.remove();
             delete this.trackDefObjects[trackUids[i]];
+        }
+    }
+
+    getTrackObjectAtPosition(position) {
+        /**
+         * Get the track object that is located at the given position.
+         *
+         * Arguments:
+         * ---------
+         *  position: [x,y]
+         *      The location we want to retrieve the track object at
+         *  return: [TrackObj, TrackObj...]
+         *      A list of the track objects that are below this position
+         */
+        let validTracks = [];
+
+        for (let trackDefObj of dictValues(this.trackDefObjects)) {
+            console.log('trackDefObj:', trackDefObj);
+            if (position[0] >= trackDefObj.trackDef.left 
+                && position[0] < trackDefObj.trackDef.left + trackDefObj.trackDef.width
+                && position[1] >= trackDefObj.trackDef.top
+                && position[1] < trackDefObj.trackDef.top + trackDefObj.trackDef.height) {
+                    validTracks.push(trackDefObj.trackObject);
+            }
+        }
+
+        return validTracks;
+    }
+
+    handleMouseClick(e) {
+        // tracks are located below the start of the DOM so we
+        // want to translate the mouse click into position relative
+        // to both the track are and the canvas
+        let trackAreaCoords = mouse(this.divTrackArea);
+        let canvasCoords = mouse(this.canvasDom);
+
+        console.log('mouseClick-x trackCoords', trackAreaCoords, 'canvasCoords', canvasCoords); 
+
+        // tracks are positioned relative to the track area, so we need
+        // those coordinates to find the tracks that overlap the mouse
+        // event
+        let tracksHere = this.getTrackObjectAtPosition(trackAreaCoords);
+
+        for (let track of tracksHere) {
+            if (track.onClick) {
+                // tracks draw onto the canvas, so they need coordinates
+                // relative to that
+                track.onClick(canvasCoords);
+            }
         }
     }
 
